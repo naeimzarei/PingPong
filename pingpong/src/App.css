@@ -1,0 +1,42 @@
+.Background-Container {
+    position: fixed;
+    width: 1000px;
+    height: 500px;
+    font-family: "Didot";
+}
+
+.Background {
+    position: fixed;
+    background-color: #346547;
+    width: 1000px;
+    height: 500px;
+    margin: 0 auto;
+    border-radius: 10px;
+    border: 2px solid black;
+}
+
+.Vertical-Line {
+    position: fixed;
+    border-left: 2px solid black;
+    height: 500px;
+    left: 500px;
+}
+
+.GameLabel {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    font-size: 20px;
+}
+
+.GameLabel-Bottom {
+    position: fixed;
+    left: 450px;
+    top: 550px;
+}
+
+.Ball {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+}

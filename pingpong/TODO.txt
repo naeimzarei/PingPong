@@ -1,0 +1,18 @@
+Wednesday, March 29, 2017
+1. Fixed CSS of Ball and Racket components
+2. Fixed positioning of many components to "fixed" as opposed
+    to "absolute" so the browser window change does not affect
+    the movement or size of the components on the DOM
+3. Added state variables for leftRacket and rightRacket
+4. Completed animateDown function: animates the racket downwards
+ . TODO
+    - animateUp function: animates the racket upwards
+    - add Racket component on right side of board
+
+Saturday, March 25, 2017
+1. Started working on the graphics design
+2. Created Background component
+3. Created GameLabel component
+ . TODO
+    - work on game graphics design
+    - think about game Components: Racket, Ball
