@@ -891,7 +891,7 @@ export default class Background extends Component {
         } else {
             if (top === -5) {
                 direction = "top";
-            } else if (Math.ceil(top) === -2) {
+            } else if (Math.ceil(top) === -2) { // TODO
                 direction = "center";
             } else {
                 direction = "bottom";
