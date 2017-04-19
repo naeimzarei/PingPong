@@ -1,3 +1,88 @@
+Monday, April 17, 2017
+1. Added startRound(). Added playPing(), playPong().
+2. Game now announces the gameplay. User can now know
+where the ball is heading.
+3. GameMessage components now showing up after each
+round to indicate who won the round. Also, the winner
+of each round is announced.
+4. Fixed initial positioning of the rackets and the
+ball. Also fixed positioning after the round ends and
+when the game ends.
+
+Wednesday, April 12, 2017
+1. Added function startGame() and endGame()
+2. Added function resetStateVariables()
+3. Added function removeGameMessage(key)
+4. Game logic is now fully functional.
+5. Added GameMessage component.
+6. Added new state variables.
+7. Added blur methods
+8. Added support for Artyom.js and Howler.js
+9. Automated the right racket movement
+10. Automated ball movement
+
+Tuesday, April 11, 2017
+1. Major bug fixes to animateBallRight() and animateBallLeft().
+    The functions would find a collision when there was no collision.
+    To prevent this from happening, global state variable hasCollided
+    was added. A timer variable was added to prevent a detection of a
+    collision when that side is serving the ball.
+2. Added CSS helper functions: blurBackground() and
+    unblurBackground().
+3. Made a component called GameMessage, which displays a
+    given message to the user.
+4. Bug fixes to hasCollided(). Updated endOfRoundHelper()
+    function to account for the changes.
+5. GameMessage helper function called addGameMessage(message).
+    Adds a GameMessage component to global state variable called
+    gameMessageArray.
+
+Sunday, April 9, 2017
+1. Made function, called endOfRoundHelper, that takes
+    care of what happens after the round is over. A
+    round is over when someone scores on the other side.
+    Algorithm: if hasCollided() returns false and
+        the ball has reached the end of the other side,
+        then the other side gets a point. The score
+        is then updated. State variables are reset.
+ 2. Updated score tracker to keep track of the score
+ 3. Minor bug fixes to GameLabel class
+ 4. Added Boolean variables isLeftServing and
+    isRightServing to keep track of which side
+    is serving.
+
+Saturday, April 8, 2017
+1. Made functions for the movement of the AI racket:
+    animateAIUp() and animateAIDown()
+2. Made collision function: hasCollided(), checks
+    if the ball has collided into the racket
+3. Made variable called RACKET_OFFSET, which is used by
+    the hasCollided() function to check if ping pong ball
+    has collided within the radius of the racket head
+
+Thursday, April 6, 2017
+1. Worked on animation functions to move ball to right
+    and left: two separate functions to do this
+    - animateBallRight()
+    - animateBallLeft()
+2. Made functions to randomize animation movement values:
+    - randomizeRightMovementValues
+    - randomizeLeftMovementValues
+3. Major cleaning up of animation functions code, including
+    a lot of bug fixes
+4. Created function getBallCoordinates(): returns
+    the Coordinate object with (x,y) values
+
+Wednesday, April 5, 2017
+1. Increased size of racket for accessibility
+2. Added a Racket component on the right side
+3. Fixed minor animation bugs for the Racket component
+4. Made animation functions for the Ball component,
+    called animateBallRight and animateBallLeft
+ . TODO
+    - AI algorithm for computer Racket movement
+    - fix Ball animation function bugs
+
 Wednesday, March 29, 2017
 1. Fixed CSS of Ball and Racket components
 2. Fixed positioning of many components to "fixed" as opposed

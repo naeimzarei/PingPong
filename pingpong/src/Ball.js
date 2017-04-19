@@ -6,7 +6,7 @@ import React, {Component} from "react";
 export default class Ball extends Component {
     render() {
         return (
-            <img alt="Ball" className="Ball" src={require("../images/ball.png")} />
+            <img alt="Ball" className="Ball" src={require("../images/ball.png")} style={this.props.css}/>
         );
     }
 }
