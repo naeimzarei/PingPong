@@ -25,12 +25,14 @@ export default class Background extends Component {
             isRightServing: false,
             isKeyUp: false,
             hasCollided: false,
-            RACKET_OFFSET: 22,
+            hasPressedSideKey: false, // TODO
+            RACKET_OFFSET: 24,
             RACKET_INTERVAL: 30,
             RACKET_INTERVAL_AI: 300,
             AI_LAG: 200,
             BALL_INTERVAL: 50,
-            SPEECH_SYNTHESIZER_DELAY: 200,
+            SPEECH_SYNTHESIZER_DELAY: 250,
+            mode: "hard", // TODO
             score: "0-0",
             time: 0,
             winner: "",
@@ -165,6 +167,7 @@ export default class Background extends Component {
             isRightServing: false,
             hasCollided: false,
             isKeyUp: false,
+            hasPressedSideKey: false, // TODO
             RACKET_OFFSET: self.state.RACKET_OFFSET,
             RACKET_INTERVAL: self.state.RACKET_INTERVAL,
             RACKET_INTERVAL_AI: self.state.RACKET_INTERVAL_AI,
@@ -384,6 +387,7 @@ export default class Background extends Component {
             isRightServing: (winner !== "left"),
             hasCollided: false,
             isKeyUp: false,
+            hasPressedSideKey: false, // TODO
             RACKET_OFFSET: self.state.RACKET_OFFSET,
             RACKET_INTERVAL: self.state.RACKET_INTERVAL,
             RACKET_INTERVAL_AI: self.state.RACKET_INTERVAL_AI,
@@ -600,11 +604,15 @@ export default class Background extends Component {
         
         switch(event.which) {
             case 37: // left
+                // TODO
+                this.setState({hasPressedSideKey: true});
                 break;
             case 38: // up
                 this.animateUp();
                 break;
             case 39: // right
+                // TODO
+                this.setState({hasPressedSideKey: true});
                 break;
             case 40: // down
                 this.animateDown();
@@ -1059,9 +1067,18 @@ export default class Background extends Component {
                     isBallIntervalOn: true
                 });
             } else {
-                if (self.state.hasCollided === false) {
+                if (self.state.hasCollided === false) { // reached end without collision
                     self.endOfRoundHelper("right");
-                } else {
+                } else { // reached end with collision
+                    // check mode
+                    if (self.state.mode === "hard") {
+                        if (self.state.hasPressedSideKey === false) {
+                            // TODO
+                            // end the round
+                            self.endOfRoundHelper("right");
+                            return;
+                        }
+                    }
                     self.endFrame(self.state.idBall);
                     self.setState({isBallIntervalOn: false, hasCollided: false, isKeyUp: false});
                     self.animateBallRight();
