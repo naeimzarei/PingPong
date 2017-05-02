@@ -27,7 +27,7 @@ export default class Background extends Component {
             isKeyUp: false,
             hasCollided: false,
             hasPressedSideKey: false,
-            RACKET_OFFSET: 1, // TODO
+            RACKET_OFFSET: 1,
             RACKET_INTERVAL: 30,
             RACKET_INTERVAL_AI: 400,
             AI_LAG: 200,
@@ -251,7 +251,7 @@ export default class Background extends Component {
             score: "0-0",
             time: 0,
             winner: "",
-            mode: self.state.mode, // TODO
+            mode: self.state.mode,
             backgroundCSS: {
                 position: "fixed",
                 backgroundColor: "#346547",
@@ -368,7 +368,6 @@ export default class Background extends Component {
      * has collided into a racket
      * @return {Boolean}
      */
-    // TODO
     hasCollided() {
         const self = this;
         
@@ -474,7 +473,6 @@ export default class Background extends Component {
         sound.play("down");
     }
     
-    // TODO
     /**
      * Plays a sound that
      * says "Ready"
@@ -736,7 +734,6 @@ export default class Background extends Component {
             case 37: // left
                 if (this.state.mode === "Hard") {
                     if (this.state.hasPressedSideKey === false) {
-                        // TODO
                         this.playReady();
                     }
                 }
@@ -748,7 +745,6 @@ export default class Background extends Component {
             case 39: // right
                 if (this.state.mode === "Hard") {
                     if (this.state.hasPressedSideKey === false) {
-                        // TODO
                         this.playReady();
                     }
                 }
