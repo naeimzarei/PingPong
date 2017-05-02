@@ -6,6 +6,7 @@ require("../node_modules/howler/dist/howler.js");
 import React, {Component} from "react";
 import GameLabel from "./GameLabel";
 import GameMessage from "./GameMessage";
+import SettingsBar from "./SettingsBar";
 import Racket from "./Racket";
 import Ball from "./Ball";
 
@@ -25,14 +26,14 @@ export default class Background extends Component {
             isRightServing: false,
             isKeyUp: false,
             hasCollided: false,
-            hasPressedSideKey: false, // TODO
-            RACKET_OFFSET: 24,
+            hasPressedSideKey: false,
+            RACKET_OFFSET: 1, // TODO
             RACKET_INTERVAL: 30,
-            RACKET_INTERVAL_AI: 300,
+            RACKET_INTERVAL_AI: 400,
             AI_LAG: 200,
-            BALL_INTERVAL: 50,
+            BALL_INTERVAL: 100,
             SPEECH_SYNTHESIZER_DELAY: 250,
-            mode: "hard", // TODO
+            mode: "Easy",
             score: "0-0",
             time: 0,
             winner: "",
@@ -47,6 +48,10 @@ export default class Background extends Component {
             },
             gameMessageArray: [
                 <GameMessage key={-1} text="Press any key to begin!" />
+            ],
+            radioArrays: [
+                [false, true, false],
+                [false, true, false]
             ],
             leftRacket: { // Player
                 top: 40, // 0
@@ -85,6 +90,7 @@ export default class Background extends Component {
         };
         
         this.handleKeyDown = this.handleKeyDown.bind(this);
+        this.handleRadioChange = this.handleRadioChange.bind(this);
         this.Artyom = window.artyom;
     }
     
@@ -96,19 +102,73 @@ export default class Background extends Component {
         const self = this;
         self.refs.board.focus();
         self.blurBackground();
+        self.Artyom.shutUp();
+    
+        window.onbeforeunload = function() {
+            self.Artyom.shutUp();
+        };
         
         setTimeout(function() {
             self.Artyom.initialize({
-                lang:"en-US",
-                continuous:false,
-                listen:false,
-                debug:false,
-                speed:0.85,
+                lang: "en-US",
+                continuous: true,
+                listen: true,
+                debug: false,
+                speed: 1.2,
                 volume: 0.3
             }).then(function(){
-                self.Artyom.say("Press any key to begin!");
+                self.Artyom.say("Easy mode. Move to the announced position. " +
+                    "There are only three spaces you can go to: top, center, and bottom. " +
+                    "You always start in the center after each round. Press any key to begin!");
             });
+            
+            var commands = [
+                {
+                    indexes: ["restart"],
+                    action: function() {
+                        self.restart();
+                    }
+                },
+                {
+                    indexes: ["hard"],
+                    action: function() {
+                        self.restart();
+                        self.setState({mode: "Hard"}, function() {
+                            self.Artyom.shutUp();
+                            self.Artyom.say("Hard mode. Same rules as easy mode, however, " +
+                                "you must move to the correct position " +
+                                "and then immediately press the left or right key. " +
+                                "You will hear the announcer say, Ready. Press any key to begin!");
+                        });
+                    }
+                },
+                {
+                    indexes: ["easy"],
+                    action: function() {
+                        self.restart();
+                        self.Artyom.shutUp();
+                        self.Artyom.say("Easy mode. Press any key to begin!");
+                    }
+                }
+            ];
+            self.Artyom.addCommands(commands);
         }, self.state.SPEECH_SYNTHESIZER_DELAY);
+    }
+    
+    /**
+     * Pauses speech recognition
+     */
+    pauseVoiceRecognition() {
+        const self = this;
+        self.Artyom.dontObey();
+    }
+    
+    /**
+     * Starts speech recognition
+     */
+    startVoiceRecognition() {
+        const self = this;
+        self.Artyom.obey();
     }
     
     /**
@@ -120,11 +180,6 @@ export default class Background extends Component {
         self.removeGameMessage(-2);
         self.unblurBackground();
         self.startRound();
-        self.setState({idTimer: setInterval(updateTime, 1000)});
-    
-        function updateTime() {
-            self.setState({time: self.state.time + 1});
-        }
     }
     
     /**
@@ -146,6 +201,25 @@ export default class Background extends Component {
         self.resetStateVariables();
         self.Artyom.say(message);
         self.setState({ gameMessageArray: [<GameMessage key={-2} text={message} />] });
+        self.blurBackground();
+        
+        self.refs.Settings.restart();
+    }
+    
+    /**
+     * Restarts the game
+     */
+    restart() {
+        const self = this;
+        self.Artyom.shutUp();
+        clearInterval(self.state.idTimer);
+        clearInterval(self.state.idBall);
+        clearInterval(self.state.idLeft);
+        clearInterval(self.state.idRight);
+        self.resetStateVariables();
+        self.Artyom.say("Game restarted in " + self.state.mode + " mode.");
+        self.setState({ gameMessageArray: [<GameMessage key={-2} text={"Press any key to begin!"} />]});
+        self.blurBackground();
     }
     
     /**
@@ -167,7 +241,7 @@ export default class Background extends Component {
             isRightServing: false,
             hasCollided: false,
             isKeyUp: false,
-            hasPressedSideKey: false, // TODO
+            hasPressedSideKey: false,
             RACKET_OFFSET: self.state.RACKET_OFFSET,
             RACKET_INTERVAL: self.state.RACKET_INTERVAL,
             RACKET_INTERVAL_AI: self.state.RACKET_INTERVAL_AI,
@@ -177,6 +251,7 @@ export default class Background extends Component {
             score: "0-0",
             time: 0,
             winner: "",
+            mode: self.state.mode, // TODO
             backgroundCSS: {
                 position: "fixed",
                 backgroundColor: "#346547",
@@ -293,6 +368,7 @@ export default class Background extends Component {
      * has collided into a racket
      * @return {Boolean}
      */
+    // TODO
     hasCollided() {
         const self = this;
         
@@ -301,17 +377,20 @@ export default class Background extends Component {
         const left_center = self.getRacketCoordinates("left");
         const right_center = self.getRacketCoordinates("right");
         
+        const x_offset = 15;
+        const y_offset = 18;
+        
         const RANGE_LEFT = {
-            x1: left_center.x - self.state.RACKET_OFFSET,
-            x2: left_center.x + self.state.RACKET_OFFSET,
-            y1: left_center.y - self.state.RACKET_OFFSET,
-            y2: left_center.y + self.state.RACKET_OFFSET
+            x1: left_center.x - self.state.RACKET_OFFSET - x_offset,
+            x2: left_center.x + self.state.RACKET_OFFSET + x_offset,
+            y1: left_center.y - self.state.RACKET_OFFSET - y_offset,
+            y2: left_center.y + self.state.RACKET_OFFSET + y_offset
         };
         const RANGE_RIGHT = {
-            x1: right_center.x - self.state.RACKET_OFFSET,
-            x2: right_center.x + self.state.RACKET_OFFSET,
-            y1: right_center.y - self.state.RACKET_OFFSET,
-            y2: right_center.y + self.state.RACKET_OFFSET
+            x1: right_center.x - self.state.RACKET_OFFSET - x_offset,
+            x2: right_center.x + self.state.RACKET_OFFSET + x_offset,
+            y1: right_center.y - self.state.RACKET_OFFSET - y_offset,
+            y2: right_center.y + self.state.RACKET_OFFSET + y_offset
         };
         
         const ballCoordinate = self.getBallCoordinates();
@@ -322,14 +401,14 @@ export default class Background extends Component {
         
         if ((ballCoordinate.x >= RANGE_LEFT.x1 && ballCoordinate.x <= RANGE_LEFT.x2) &&
             (ballCoordinate.y >= RANGE_LEFT.y1 && ballCoordinate.y <= RANGE_LEFT.y2)) {
-            console.log("Collision left");
+            //console.log("Collision left");
             updateState();
             return true;
         }
     
         if ((ballCoordinate.x >= RANGE_RIGHT.x1 && ballCoordinate.x <= RANGE_RIGHT.x2) &&
             (ballCoordinate.y >= RANGE_RIGHT.y1 && ballCoordinate.y <= RANGE_RIGHT.y2)) {
-            console.log("Collision right");
+            //console.log("Collision right");
             updateState();
             return true;
         }
@@ -344,9 +423,9 @@ export default class Background extends Component {
         const sound = new window.Howl({
             src: [require("../sound/Ping.mp3")],
             autoplay: false,
-            volume: 10
+            volume: 20
         });
-        sound.pos(-3, 0, 0);
+        sound.pos(-5, 0, 0);
         sound.play();
     }
     
@@ -357,10 +436,59 @@ export default class Background extends Component {
         const sound = new window.Howl({
             src: [require("../sound/Pong.mp3")],
             autoplay: false,
-            volume: 10
+            volume: 20
         });
-        sound.pos(3, 0, 0);
+        sound.pos(5, 0, 0);
         sound.play();
+    }
+    
+    /**
+     * Plays a sound as Racket
+     * moves up
+     */
+    playUp() {
+        const sound = new window.Howl({
+            src: [require("../sound/Sweep.mp3")],
+            autoplay: false,
+            volume: 0.8,
+            sprite: {
+                up: [185, 215]
+            }
+        });
+        sound.play("up");
+    }
+    
+    /**
+     * Plays a sound as Racket
+     * moves down
+     */
+    playDown() {
+        const sound = new window.Howl({
+            src: [require("../sound/Sweep.mp3")],
+            autoplay: false,
+            volume: 0.8,
+            sprite: {
+                down: [400, 500]
+            }
+        });
+        sound.play("down");
+    }
+    
+    // TODO
+    /**
+     * Plays a sound that
+     * says "Ready"
+     */
+    playReady() {
+        const sound = new window.Howl({
+            src: [require("../sound/Ready.mp3")],
+            autoplay: false,
+            volume: 2,
+            sprite: {
+                ready: [25, 600]
+            }
+        });
+        sound.play("ready");
     }
     
     /**
@@ -375,6 +503,7 @@ export default class Background extends Component {
         self.endFrame(self.state.idLeft);
         self.endFrame(self.state.idRight);
         self.endFrame(self.state.idBall);
+        self.endFrame(self.state.idTimer);
         
         self.setState({
             idLeft: 0,
@@ -387,7 +516,7 @@ export default class Background extends Component {
             isRightServing: (winner !== "left"),
             hasCollided: false,
             isKeyUp: false,
-            hasPressedSideKey: false, // TODO
+            hasPressedSideKey: false,
             RACKET_OFFSET: self.state.RACKET_OFFSET,
             RACKET_INTERVAL: self.state.RACKET_INTERVAL,
             RACKET_INTERVAL_AI: self.state.RACKET_INTERVAL_AI,
@@ -574,6 +703,7 @@ export default class Background extends Component {
      */
     startRound() {
         const self = this;
+        self.setState({idTimer: setInterval(() => { self.setState({time: self.state.time + 1});}, 1000)});
         self.removeAllGameMessages();
         self.unblurBackground();
         self.Artyom.shutUp();
@@ -604,18 +734,34 @@ export default class Background extends Component {
         
         switch(event.which) {
             case 37: // left
-                // TODO
+                if (this.state.mode === "Hard") {
+                    if (this.state.hasPressedSideKey === false) {
+                        // TODO
+                        this.playReady();
+                    }
+                }
                 this.setState({hasPressedSideKey: true});
                 break;
             case 38: // up
                 this.animateUp();
                 break;
             case 39: // right
-                // TODO
+                if (this.state.mode === "Hard") {
+                    if (this.state.hasPressedSideKey === false) {
+                        // TODO
+                        this.playReady();
+                    }
+                }
                 this.setState({hasPressedSideKey: true});
                 break;
             case 40: // down
                 this.animateDown();
+                break;
+            case 65: // A
+                this.setState({hasPressedSideKey: true});
+                break;
+            case 68: // D
+                this.setState({hasPressedSideKey: true});
                 break;
             case 87: // w
                 this.animateUp();
@@ -634,8 +780,10 @@ export default class Background extends Component {
     animateDown() {
         var self = this;
         
-        if (self.state.leftRacket.top >= 80) return;
+        if (self.state.leftRacket.top >= 70) return;
         if (self.state.isLeftRacketIntervalOn) return;
+        
+        self.playDown();
         
         self.setState({
             idLeft: setInterval(frame, self.state.RACKET_INTERVAL),
@@ -682,6 +830,8 @@ export default class Background extends Component {
     
         if (self.state.leftRacket.top <= 0) return;
         if (self.state.isLeftRacketIntervalOn) return;
+
+        self.playUp();
     
         self.setState({
             idLeft: setInterval(frame, self.state.RACKET_INTERVAL),
@@ -772,7 +922,7 @@ export default class Background extends Component {
     animateAIDown() {
         var self = this;
     
-        if (self.state.rightRacket.top >= 80) return;
+        if (self.state.rightRacket.top >= 70) return;
         if (self.state.isRightRacketIntervalOn) return;
     
         self.setState({
@@ -899,7 +1049,7 @@ export default class Background extends Component {
         } else {
             if (top === -5) {
                 direction = "top";
-            } else if (Math.ceil(top) === -2) { // TODO
+            } else if (top === -2.5) {
                 direction = "center";
             } else {
                 direction = "bottom";
@@ -954,6 +1104,7 @@ export default class Background extends Component {
         if (self.state.isRightServing) return;
         if (self.state.isKeyUp) return;
         self.setState({isKeyUp: true});
+        self.setState({hasPressedSideKey: false});
         
         self.setState({
             idBall: setInterval(frame, self.state.BALL_INTERVAL)
@@ -1067,14 +1218,11 @@ export default class Background extends Component {
                     isBallIntervalOn: true
                 });
             } else {
-                if (self.state.hasCollided === false) { // reached end without collision
+                if (self.state.hasCollided === false) {
                     self.endOfRoundHelper("right");
-                } else { // reached end with collision
-                    // check mode
-                    if (self.state.mode === "hard") {
+                } else {
+                    if (self.state.mode === "Hard") {
                         if (self.state.hasPressedSideKey === false) {
-                            // TODO
-                            // end the round
                             self.endOfRoundHelper("right");
                             return;
                         }
@@ -1088,13 +1236,53 @@ export default class Background extends Component {
     }
     
     /**
+     * Checks selected radio button in SettingsBar
+     * and changes game constants
+     */
+    handleRadioChange() {
+        const self = this;
+        self.refs.board.focus();
+        self.restart();
+        
+        setTimeout(function() {
+            const ballChecked = self.refs.Settings.state.ballChecked.slice();
+            const computerChecked = self.refs.Settings.state.computerChecked.slice();
+            
+            var radioArrays = [];
+            radioArrays.push(ballChecked);
+            radioArrays.push(computerChecked);
+            self.setState({radioArrays: radioArrays});
+            
+            var factor;
+            if (ballChecked[0]) {
+                factor = 1.5;
+            } else if (ballChecked[1]) {
+                factor = 1;
+            } else {
+                factor = 0.5;
+            }
+            self.setState({BALL_INTERVAL: 100 / factor});
+            
+            if (computerChecked[0]) {
+                factor = 1.5;
+            } else if (computerChecked[1]) {
+                factor = 1;
+            } else {
+                factor = 0.5;
+            }
+            self.setState({RACKET_INTERVAL_AI: 400 / factor});
+        }, 75);
+    }
+    
+    /**
      * Renders components to DOM
      */
     render() {
         return (
             <div className="Background-Container">
-                <GameLabel labels={[this.state.score, this.convertInteger(this.state.time, 3), "Settings"]} />
-                <div ref="board" tabIndex="0" onKeyUp={this.handleKeyUp} onKeyDown={this.handleKeyDown} style={this.state.backgroundCSS}>
+                <SettingsBar ref="Settings" checked={this.state.radioArrays} handleRadioChange={this.handleRadioChange} />
+                <GameLabel labels={[this.state.score, this.convertInteger(this.state.time, 3), this.state.mode + " mode"]} />
+                <div ref="board" tabIndex="0" onKeyDown={this.handleKeyDown} style={this.state.backgroundCSS}>
                     <Racket css={this.state.leftRacket.css} />
                     <Racket css={this.state.rightRacket.css} />
                     <Ball css={this.state.ball.css}/>
