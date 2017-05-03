@@ -114,12 +114,14 @@ export default class Background extends Component {
                 continuous: true,
                 listen: true,
                 debug: false,
-                speed: 1.2,
+                speed: 1.1,
                 volume: 0.3
             }).then(function(){
-                self.Artyom.say("Easy mode. Move to the announced position. " +
+                self.Artyom.say("Easy mode. Move to the announced position using the up and down keys. " +
                     "There are only three spaces you can go to: top, center, and bottom. " +
-                    "You always start in the center after each round. Press any key to begin!");
+                    "You always start in the center at the beginning of each round. You can say restart to " +
+                    "start over at any time. You can also say hard to change to the hard mode. " +
+                    "Press any key to begin!");
             });
             
             var commands = [
