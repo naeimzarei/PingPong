@@ -733,6 +733,14 @@ export default class Background extends Component {
         }
         
         switch(event.which) {
+            case 32: // spacebar
+                if (this.state.mode === "Hard") {
+                    if (this.state.hasPressedSideKey === false) {
+                        this.playReady();
+                    }
+                }
+                this.setState({hasPressedSideKey: true});
+                break;
             case 37: // left
                 if (this.state.mode === "Hard") {
                     if (this.state.hasPressedSideKey === false) {
@@ -756,9 +764,19 @@ export default class Background extends Component {
                 this.animateDown();
                 break;
             case 65: // A
+                if (this.state.mode === "Hard") {
+                    if (this.state.hasPressedSideKey === false) {
+                        this.playReady();
+                    }
+                }
                 this.setState({hasPressedSideKey: true});
                 break;
             case 68: // D
+                if (this.state.mode === "Hard") {
+                    if (this.state.hasPressedSideKey === false) {
+                        this.playReady();
+                    }
+                }
                 this.setState({hasPressedSideKey: true});
                 break;
             case 87: // w

@@ -18,8 +18,8 @@
       <file leaf-file-name="Background.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Background.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-9170">
-              <caret line="722" column="17" lean-forward="false" selection-start-line="722" selection-start-column="4" selection-end-line="722" selection-end-column="17" />
+            <state relative-caret-position="36">
+              <caret line="741" column="57" lean-forward="false" selection-start-line="741" selection-start-column="57" selection-end-line="741" selection-end-column="57" />
               <folding>
                 <element signature="e#161#200#0" expanded="true" />
               </folding>
@@ -38,8 +38,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>handlekeydown(event</find>
-      <find>TODO</find>
       <find>playup() {</find>
       <find>mode. press any key</find>
       <find>eas</find>
@@ -68,6 +66,8 @@
       <find>hascollided() {</find>
       <find>todo</find>
       <find>componentdidmount</find>
+      <find>handlekeydown</find>
+      <find>handlekeydown(even</find>
     </findStrings>
   </component>
   <component name="IdeDocumentHistory">
@@ -242,12 +242,12 @@
       <workItem from="1493651134498" duration="15533000" />
       <workItem from="1493753326070" duration="7941000" />
       <workItem from="1493765678463" duration="4000" />
-      <workItem from="1493814573208" duration="619000" />
+      <workItem from="1493814573208" duration="823000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="27318000" />
+    <option name="totallyTimeSpent" value="27522000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1238" height="763" extended-state="0" />
@@ -339,8 +339,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Background.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-9170">
-          <caret line="722" column="17" lean-forward="false" selection-start-line="722" selection-start-column="4" selection-end-line="722" selection-end-column="17" />
+        <state relative-caret-position="36">
+          <caret line="741" column="57" lean-forward="false" selection-start-line="741" selection-start-column="57" selection-end-line="741" selection-end-column="57" />
           <folding>
             <element signature="e#161#200#0" expanded="true" />
           </folding>
