@@ -14,5 +14,9 @@
         </SOURCES>
       </library>
     </orderEntry>
+    <orderEntry type="module" module-name="router" />
+    <orderEntry type="module" module-name="SQLITE3" />
+    <orderEntry type="module" module-name="tar-heel-shared-reader" />
+    <orderEntry type="module" module-name="restful-interface" />
   </component>
 </module>

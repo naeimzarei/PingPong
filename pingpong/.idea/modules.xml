@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/../../../Tester/SQLITE3/.idea/SQLITE3.iml" filepath="$PROJECT_DIR$/../../../Tester/SQLITE3/.idea/SQLITE3.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/pingpong.iml" filepath="$PROJECT_DIR$/.idea/pingpong.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../restful-interface/.idea/restful-interface.iml" filepath="$PROJECT_DIR$/../../restful-interface/.idea/restful-interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../../tar-heel-shared-reader/.idea/tar-heel-shared-reader.iml" filepath="$PROJECT_DIR$/../../tar-heel-shared-reader/.idea/tar-heel-shared-reader.iml" />
     </modules>
   </component>
 </project>
